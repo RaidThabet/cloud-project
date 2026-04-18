@@ -55,12 +55,6 @@ resource "aws_security_group" "backend_sg" {
   })
 }
 
-data "http" "my_public_ip" {
-  url = "https://ifconfig.co/json"
-  request_headers = {
-    Accept = "application/json"
-  }
-}
 # RDS security group: PostgreSQL reachable only from backend security group.
 resource "aws_security_group" "rds_sg" {
   name        = "${var.project_name}-rds-sg"
@@ -89,10 +83,10 @@ resource "aws_security_group" "rds_sg" {
   })
 }
 
-# Frontend security group: public HTTP and SSH for debugging.
+# Frontend security group: public HTTP.
 resource "aws_security_group" "frontend_sg" {
   name        = "${var.project_name}-frontend-sg"
-  description = "Allow HTTP and SSH from internet to frontend"
+  description = "Allow HTTP from internet to frontend"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -101,14 +95,6 @@ resource "aws_security_group" "frontend_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "SSH from internet for debugging"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["${jsondecode(data.http.my_public_ip.response_body).ip}/32"]
   }
 
   egress {
