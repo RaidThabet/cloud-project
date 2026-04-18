@@ -7,6 +7,8 @@ const pool = require("./db");
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
+let dbReady = false;
+
 app.use(cors());
 app.use(express.json());
 
@@ -21,10 +23,24 @@ async function initDb() {
   `;
 
   await pool.query(createTableQuery);
+  dbReady = true;
+}
+
+async function initDbWithRetry(delayMs = 5000) {
+  try {
+    await initDb();
+    console.log("Database initialized");
+  } catch (error) {
+    dbReady = false;
+    console.error(`Database init failed, retrying in ${delayMs}ms:`, error.message);
+    setTimeout(() => {
+      initDbWithRetry(delayMs);
+    }, delayMs);
+  }
 }
 
 app.get("/health", async (_req, res) => {
-  res.status(200).json({ status: "ok" });
+  res.status(200).json({ status: "ok", dbReady });
 });
 
 app.get("/tasks", async (_req, res) => {
@@ -111,13 +127,7 @@ app.delete("/tasks/:id", async (req, res) => {
   }
 });
 
-initDb()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Failed to initialize database:", error.message);
-    process.exit(1);
-  });
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+  initDbWithRetry();
+});

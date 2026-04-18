@@ -95,9 +95,22 @@ resource "aws_launch_template" "backend" {
     PORT=${var.backend_app_port}
     ENVFILE
 
+    # Also create app-local env file and export values for this boot session.
+    cat > /opt/app/backend/.env <<'ENVFILE'
+    DB_HOST=${var.db_address}
+    DB_PORT=${var.db_port}
+    DB_NAME=${var.db_name}
+    DB_USER=${var.db_username}
+    DB_PASSWORD=${var.db_password}
+    PORT=${var.backend_app_port}
+    ENVFILE
+    set -a
+    . /opt/app/backend/.env
+    set +a
+
     # Start backend with PM2 to keep process alive across reboots.
     npm install -g pm2
-    pm2 start npm --name backend -- start
+    pm2 start npm --name backend -- start --update-env
     pm2 save
     pm2 startup systemd -u root --hp /root
   EOT
