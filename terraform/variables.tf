@@ -146,7 +146,7 @@ variable "github_repo_url" {
   description = "Git repository URL containing frontend and backend folders"
   type        = string
   # TODO: Replace this placeholder with your actual application repository URL.
-  default = "https://github.com/your-org/your-repo.git"
+  default = "https://github.com/RaidThabet/cloud-project"
 }
 
 variable "ubuntu_ami_owner" {
