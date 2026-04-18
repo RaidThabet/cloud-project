@@ -22,5 +22,6 @@ module "backend" {
   backend_asg_desired_size   = var.backend_asg_desired_size
   backend_asg_max_size       = var.backend_asg_max_size
   backend_cpu_target_percent = var.backend_cpu_target_percent
+  github_sha                 = var.github_sha
   tags                       = local.common_tags
 }

@@ -166,3 +166,9 @@ variable "ubuntu_ami_id_override" {
   type        = string
   default     = null
 }
+
+variable "github_sha" {
+  description = "Commit SHA to trigger instance replacement via user_data updates"
+  type        = string
+  default     = "latest"
+}

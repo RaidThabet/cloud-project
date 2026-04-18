@@ -105,3 +105,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "github_sha" {
+  description = "Commit SHA to trigger instance replacement via user_data updates"
+  type        = string
+}
