@@ -10,6 +10,7 @@ resource "aws_instance" "frontend" {
     #!/bin/bash
     # Stop on first error to avoid partial frontend deployment.
     set -e
+    # GitHub SHA forcing EC2 Instance replacement: ${var.github_sha}
 
     apt-get update -y
     apt-get install -y nginx git

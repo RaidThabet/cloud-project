@@ -67,6 +67,7 @@ resource "aws_launch_template" "backend" {
     #!/bin/bash
     # Stop on first error to avoid half-configured hosts.
     set -e
+    # GitHub SHA forcing Launch Template update: ${var.github_sha}
 
     apt-get update -y
     apt-get install -y git curl ca-certificates gnupg
@@ -151,6 +152,13 @@ resource "aws_autoscaling_group" "asg" {
     key                 = "Project"
     value               = var.project_name
     propagate_at_launch = true
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
   }
 }
 

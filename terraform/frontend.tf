@@ -9,5 +9,6 @@ module "frontend" {
   frontend_sg_id         = module.security.frontend_sg_id
   github_repo_url        = var.github_repo_url
   alb_dns_name           = module.backend.alb_dns
+  github_sha             = var.github_sha
   tags                   = local.common_tags
 }
